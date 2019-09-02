@@ -32,10 +32,8 @@ void shuffleGems(char** gems) {
         char* t = gems[i];
         gems[i] = gems[j];
         gems[j] = t;
-        printf("%-2s", gems[i]);
     }
-    printf("\n");
-    // printf("%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", gems[0], gems[1], gems[2], gems[3], gems[4], gems[5], gems[6], gems[7], gems[8], gems[9], gems[10], gems[11], gems[12], gems[13]);
+    printf("%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", gems[0], gems[1], gems[2], gems[3], gems[4], gems[5], gems[6], gems[7], gems[8], gems[9], gems[10], gems[11], gems[12], gems[13]);
 }
 
 int battleWithMonster(Monster* m) {
