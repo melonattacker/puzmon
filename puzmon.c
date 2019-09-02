@@ -25,7 +25,7 @@ void printMonsterSummary(Monster* m) {
     printf("$%s$ HP=%d 攻撃=%d 防御=%d\n", (*m).name, (*m).hp, (*m).attack, (*m).defence);
 }
 
-void shuffleGems(char** gems) {
+void rondomShuffleGems(char** gems) {
     srand((unsigned int)time(NULL));
     for(int i = 0; i < 14; i++) {
         int j = rand() % 15;
@@ -34,7 +34,9 @@ void shuffleGems(char** gems) {
         gems[j] = t;
     }
     printf("%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", gems[0], gems[1], gems[2], gems[3], gems[4], gems[5], gems[6], gems[7], gems[8], gems[9], gems[10], gems[11], gems[12], gems[13]);
+    printf("------------------------------\n");
 }
+
 
 int battleWithMonster(Monster* m) {
     int enemyMaxHp = (*m).hp;
@@ -47,7 +49,7 @@ int battleWithMonster(Monster* m) {
     printf("HP= %d / %d\n", partyHp, 600);
     printf("------------------------------\n");
     printf("A B C D E F G H I J K L M N\n");
-    shuffleGems(&gems[0]);
+    rondomShuffleGems(&gems[0]);
 }
 
 int main(int argc, char** argv) {
