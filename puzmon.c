@@ -3,20 +3,20 @@
 #include <string.h>
 #include <time.h>
 
-typedef char String[1024];
 // グローバル変数
 // リテラルを用いることで静的領域にメモリを確保
 char* gems[14] = {"#", "#", "#", "#", "@", "@", "@", "@", "~", "~", "~", "~", "&", "&"};
+char* letters[14] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "L"};
 char* playerName;
 int partyHp = 600;
 int partyDefence;
 
 // 構造体宣言
 typedef struct {
-    String name;
+    char *name;
     int hp;
     int maxHp;
-    String type;
+    char *type;
     int attack;
     int defence;
 } Monster;
@@ -25,15 +25,74 @@ void printMonsterSummary(Monster* m) {
     printf("$%s$ HP=%d 攻撃=%d 防御=%d\n", (*m).name, (*m).hp, (*m).attack, (*m).defence);
 }
 
-void shuffleGems(char** gems) {
+void rondomShuffleGems(char** gems) {
     srand((unsigned int)time(NULL));
     for(int i = 0; i < 14; i++) {
-        int j = rand() % 15;
+        int j = rand() % 14;
         char* t = gems[i];
         gems[i] = gems[j];
         gems[j] = t;
     }
     printf("%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", gems[0], gems[1], gems[2], gems[3], gems[4], gems[5], gems[6], gems[7], gems[8], gems[9], gems[10], gems[11], gems[12], gems[13]);
+    printf("------------------------------\n");
+}
+
+int askNumberOfLetter(char* letter) {
+    int sizeOfLetters = sizeof letters / sizeof letters[0];
+    for(int i = 0; i < sizeOfLetters; i++) {
+        if(strcmp(letter, letters[i]) == 0) {
+            return i;
+        }
+    }
+    printf("正しくコマンドを入力してください");
+    return 1;
+}
+
+void moveGem() {
+    char command[3];
+    char cmd1[2];
+    char cmd2[2];
+
+    int index_cmd1;
+    int index_cmd2;
+    int diff_index;
+
+    printf("コマンド？>");
+    scanf("%s", command);
+
+    if(strlen(command) == 2) {
+        strncpy(cmd1, command, 1);
+        cmd1[1] = '\0';
+        strncpy(cmd2, command + 1, 1);
+        cmd2[1] = '\0';
+
+        index_cmd1 = askNumberOfLetter(cmd1);
+        index_cmd2 = askNumberOfLetter(cmd2);
+
+        if(index_cmd1 < index_cmd2) {
+            diff_index = index_cmd2 - index_cmd1;
+            printf("%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", gems[0], gems[1], gems[2], gems[3], gems[4], gems[5], gems[6], gems[7], gems[8], gems[9], gems[10], gems[11], gems[12], gems[13]);
+            for(int i = 0; i < diff_index; i++) {
+                char* s = gems[index_cmd1 + i];
+                gems[index_cmd1 + i] = gems[index_cmd1 + i + 1];
+                gems[index_cmd1 + i + 1] = s;
+                printf("%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", gems[0], gems[1], gems[2], gems[3], gems[4], gems[5], gems[6], gems[7], gems[8], gems[9], gems[10], gems[11], gems[12], gems[13]);
+            }
+        } else {
+            diff_index = index_cmd1 - index_cmd2;
+            printf("%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", gems[0], gems[1], gems[2], gems[3], gems[4], gems[5], gems[6], gems[7], gems[8], gems[9], gems[10], gems[11], gems[12], gems[13]);
+            for(int i = 0; i < diff_index; i++) {
+                char* t = gems[index_cmd2 + i];
+                gems[index_cmd2 + i] = gems[index_cmd2 + i + 1];
+                gems[index_cmd2 + i + 1] = t;
+                printf("%s %s %s %s %s %s %s %s %s %s %s %s %s %s\n", gems[0], gems[1], gems[2], gems[3], gems[4], gems[5], gems[6], gems[7], gems[8], gems[9], gems[10], gems[11], gems[12], gems[13]);
+            }
+        }
+
+    } else {
+        printf("コマンドはA~Nまでの大文字2文字を入力してください (ex) A-D\n");
+        moveGem();
+    }
 }
 
 int battleWithMonster(Monster* m) {
@@ -47,7 +106,8 @@ int battleWithMonster(Monster* m) {
     printf("HP= %d / %d\n", partyHp, 600);
     printf("------------------------------\n");
     printf("A B C D E F G H I J K L M N\n");
-    shuffleGems(&gems[0]);
+    rondomShuffleGems(&gems[0]);
+    moveGem();
 }
 
 int main(int argc, char** argv) {
