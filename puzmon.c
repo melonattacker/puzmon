@@ -3,7 +3,6 @@
 #include <string.h>
 #include <time.h>
 
-typedef char String[1024];
 // グローバル変数
 // リテラルを用いることで静的領域にメモリを確保
 char* gems[14] = {"#", "#", "#", "#", "@", "@", "@", "@", "~", "~", "~", "~", "&", "&"};
@@ -13,10 +12,10 @@ int partyDefence;
 
 // 構造体宣言
 typedef struct {
-    String name;
+    char* name;
     int hp;
     int maxHp;
-    String type;
+    char* type;
     int attack;
     int defence;
 } Monster;
@@ -28,7 +27,7 @@ void printMonsterSummary(Monster* m) {
 void rondomShuffleGems(char** gems) {
     srand((unsigned int)time(NULL));
     for(int i = 0; i < 14; i++) {
-        int j = rand() % 15;
+        int j = rand() % 14;
         char* t = gems[i];
         gems[i] = gems[j];
         gems[j] = t;
@@ -37,6 +36,57 @@ void rondomShuffleGems(char** gems) {
     printf("------------------------------\n");
 }
 
+int askNumberOfLetter(char* letter) {
+    enum { A, B, C, D, E, F, G, H, I, J, K, L, M, N };
+
+    switch(letter) {
+        case A:
+            return 0;
+        case B:
+            return 1;
+        case C:
+            return 2;
+        case D:
+            return 3;
+        case E:
+            return 4;
+        case F:
+            return 5;
+        case G:
+            return 6;
+        case H:
+            return 7;
+        case I:
+            return 8;
+        case J:
+            return 9;
+        case K:
+            return 10;
+        case L:
+            return 11;
+        case M:
+            return 12;
+        case N:
+            return 13;
+        default:
+            break;
+    }
+}
+
+void moveGem() {
+    char command[3];
+
+    printf("コマンド？>");
+    scanf("%s", command);
+
+    if(strlen(command) == 2) {
+        printf("%c", command[0]);
+        printf("%c", command[1]);
+    } else {
+        printf("コマンドはA~Nまでの大文字2文字を入力してください (ex) AD\n");
+        moveGem();
+    }
+}
 
 int battleWithMonster(Monster* m) {
     int enemyMaxHp = (*m).hp;
@@ -50,6 +100,7 @@ int battleWithMonster(Monster* m) {
     printf("------------------------------\n");
     printf("A B C D E F G H I J K L M N\n");
     rondomShuffleGems(&gems[0]);
+    moveGem();
 }
 
 int main(int argc, char** argv) {
