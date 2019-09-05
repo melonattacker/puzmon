@@ -38,6 +38,7 @@ void printMonsterSummary(Monster* m) {
     printf("$%s$ HP=%d 攻撃=%d 防御=%d\n", (*m).name, (*m).hp, (*m).attack, (*m).defence);
 }
 
+// Gemsを表示する
 void printGems() {
     for(int i = 0; i < 14; i++) {
         switch(gems[i]) {
@@ -62,6 +63,14 @@ void printGems() {
     printf("\n");
 }
 
+// ランダムに1つのGemを生成する
+int rondomCreateGem() {
+    srand((unsigned int)time(NULL));
+    int gemType = rand() % 5;
+    return gemType;
+}
+
+// 初めにランダムにスロットを並べる
 void rondomShuffleGems() {
     srand((unsigned int)time(NULL));
     for(int i = 0; i < 14; i++) {
@@ -72,6 +81,7 @@ void rondomShuffleGems() {
     printf("------------------------------\n");
 }
 
+// コマンドに対して配列のインデックスを返す
 int askNumberOfLetter(char* letter) {
     int sizeOfLetters = sizeof letters / sizeof letters[0];
     for(int i = 0; i < sizeOfLetters; i++) {
@@ -83,30 +93,53 @@ int askNumberOfLetter(char* letter) {
     return 1;
 }
 
-void judgePuzzle() {
-    for(int i = 0; i < 14; i++) {
-        if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0) {
-            switch(gems[i]) {
-                case FIRE:
-                    printf("$朱雀$の攻撃！\n");
-                    break;
-                case WATER:
-                    printf("~玄武~の攻撃！\n");
-                    break;
-                case WIND:
-                    printf("@青龍@の攻撃！\n");
-                    break;
-                case EARTH:
-                    printf("#白虎#の攻撃！\n");
-                    break;
-                case LIFE:
-                    printf("味方のライフが回復した！\n");
-                    break;
+void leftJustify(int i) {
+    if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0) {
+        printGems();
+        for(int j = 2; j > -1; j--) {
+            for(int k = 0; k < 14 - (i + j); k++) {
+                gems[(i + j) + k] = gems[(i + j) + (k + 1)];
             }
+            int gemType = rondomCreateGem();
+            gems[14] = gemType;
+            printGems();
         }
     }
 }
 
+// パズルを評価する
+int judgePuzzle() {
+    for(int i = 0; i < 12; i++) {
+        if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0) {
+            switch(gems[i]) {
+                case FIRE:
+                    printf("$朱雀$の攻撃！\n");
+                    return i;
+                    break;
+                case WATER:
+                    printf("~玄武~の攻撃！\n");
+                    return i;
+                    break;
+                case WIND:
+                    printf("@青龍@の攻撃！\n");
+                    return i;
+                    break;
+                case EARTH:
+                    printf("#白虎#の攻撃！\n");
+                    return i;
+                    break;
+                case LIFE:
+                    printf("味方のライフが回復した！\n");
+                    return i;
+                    break;
+            }
+        } 
+    }
+
+    return 15;
+}
+
+// コマンドを受け取ってGemsを動かす
 void moveGem() {
     char command[3];
     char cmd1[2];
@@ -155,15 +188,18 @@ void moveGem() {
     }
 }
 
+// 敵の攻撃
 void enemyAttack(Monster* m) {
     int attack = (*m).attack;
     partyHp -= attack;
     printf("[%sのターン]\n~%s~の攻撃!%dのダメージを受けた\n", (*m).name, (*m).name, attack);
 }
 
+// モンスターとのバトル
 int battleWithMonster(Monster* m) {
     int enemyMaxHp = (*m).hp;
     int enemyCurrentHp = (*m).hp;
+    int i;
     printf("~%s~が現れた！\n\n\n", (*m).name);
     printf("[%sのターン]", playerName);
     printf("------------------------------\n");
@@ -174,7 +210,12 @@ int battleWithMonster(Monster* m) {
     printf("A B C D E F G H I J K L M N\n");
     rondomShuffleGems();
     moveGem();
-    judgePuzzle();
+
+    i = judgePuzzle();
+    if(i != 15) {
+        leftJustify(i);
+    }
+    
     enemyAttack(&suraimu);
 }
 
