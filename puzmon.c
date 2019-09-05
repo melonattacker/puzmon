@@ -6,7 +6,7 @@
 // グローバル変数
 // リテラルを用いることで静的領域にメモリを確保
 int gems[14];
-char* letters[14] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "L"};
+char* letters[14] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N"};
 char* playerName;
 int partyHp = 600;
 int partyDefence;
@@ -56,9 +56,6 @@ void printGems() {
             case LIFE:
                 printf("&");
                 break;
-            case EMPTY:
-                printf(" ");
-                break;
         }
         printf(" ");
     }
@@ -68,7 +65,7 @@ void printGems() {
 void rondomShuffleGems() {
     srand((unsigned int)time(NULL));
     for(int i = 0; i < 14; i++) {
-        int gemType = rand() % 6;
+        int gemType = rand() % 5;
         gems[i] = gemType;
     }
     printGems();
@@ -87,7 +84,27 @@ int askNumberOfLetter(char* letter) {
 }
 
 void judgePuzzle() {
-
+    for(int i = 0; i < 14; i++) {
+        if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0) {
+            switch(gems[i]) {
+                case FIRE:
+                    printf("$朱雀$の攻撃！\n");
+                    break;
+                case WATER:
+                    printf("~玄武~の攻撃！\n");
+                    break;
+                case WIND:
+                    printf("@青龍@の攻撃！\n");
+                    break;
+                case EARTH:
+                    printf("#白虎#の攻撃！\n");
+                    break;
+                case LIFE:
+                    printf("味方のライフが回復した！\n");
+                    break;
+            }
+        }
+    }
 }
 
 void moveGem() {
@@ -157,6 +174,7 @@ int battleWithMonster(Monster* m) {
     printf("A B C D E F G H I J K L M N\n");
     rondomShuffleGems();
     moveGem();
+    judgePuzzle();
     enemyAttack(&suraimu);
 }
 
