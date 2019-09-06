@@ -94,71 +94,69 @@ int askNumberOfLetter(char* letter) {
 }
 
 // パズルを評価する
-int judgePuzzle(int combo) {
-    for(int i = 0; i < 12; i++) {
-        if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0) {
-            switch(gems[i]) {
-                case FIRE:
-                    if(combo > 1) {
-                        printf("$朱雀$の攻撃！ %d COMBO!\n", combo);
-                    } else {
-                        printf("$朱雀$の攻撃！ \n");
-                    }
-                    return i;
-                    break;
-                case WATER:
-                    if(combo > 1) {
-                        printf("~玄武~の攻撃！ %d COMBO!\n", combo);
-                    } else {
-                        printf("~玄武~の攻撃！ \n");
-                    }
-                    return i;
-                    break;
-                case WIND:
-                    if(combo > 1) {
-                        printf("@青龍@の攻撃！ %d COMBO!\n", combo);
-                    } else {
-                        printf("@青龍@の攻撃！ \n");
-                    }
-                    return i;
-                    break;
-                case EARTH:
-                    if(combo > 1) {
-                        printf("#白虎#の攻撃！ %d COMBO!\n", combo);
-                    } else {
-                        printf("#白虎#の攻撃！ \n");
-                    }
-                    return i;
-                    break;
-                case LIFE:
-                    if(combo > 1) {
-                        printf("味方のライフが回復した！ %d COMBO!\n", combo);
-                    } else {
-                        printf("味方のライフが回復した！ \n");
-                    }
-                    return i;
-                    break;
+void judgeGems(int i, int combo) {
+    switch(gems[i]) {
+        case FIRE:
+            if(combo > 1) {
+                printf("$朱雀$の攻撃！ %d COMBO!\n", combo);
+            } else {
+                printf("$朱雀$の攻撃！ \n");
             }
-        } 
+            break;      
+        case WATER:
+            if(combo > 1) {
+                printf("~玄武~の攻撃！ %d COMBO!\n", combo);
+            } else {
+                printf("~玄武~の攻撃！ \n");
+            }
+            break;
+        case WIND:
+            if(combo > 1) {
+                printf("@青龍@の攻撃！ %d COMBO!\n", combo);
+            } else {
+                printf("@青龍@の攻撃！ \n");
+            }
+            break;
+        case EARTH:
+            if(combo > 1) {
+                printf("#白虎#の攻撃！ %d COMBO!\n", combo);
+            } else {
+                printf("#白虎#の攻撃！ \n");
+            }
+            break;
+        case LIFE:
+            if(combo > 1) {
+                printf("味方のライフが回復した！ %d COMBO!\n", combo);
+            } else {
+                printf("味方のライフが回復した！ \n");
+            }
+            break;
     }
-
-    return 15;
 }
 
-void leftJustify(int i) {
-    // 2コンボ以降生成されるGemが同じパターン
+void judgeAndJustyfyGems() {
     srand((unsigned int)time(NULL));
-    int comboed;
-    if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0) {
-        printGems();
-        for(int j = 2; j > -1; j--) {
-            for(int k = 0; k < 14 - (i + j); k++) {
-                gems[(i + j) + k] = gems[(i + j) + (k + 1)];
-            }
-            int gemType = rand() % 5;
-            gems[13] = gemType;
+    int combo = 0;
+    int comboed = 1;
+    for(int i = 0; i < 12; i++) {
+        if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0) {
+            combo++;
+            comboed = 0;
+            judgeGems(i, combo);
             printGems();
+            for(int j = 2; j > -1; j--) {
+                for(int k = 0; k < 14 - (i + j); k++) {
+                    gems[(i + j) + k] = gems[(i + j) + (k + 1)];
+                }
+                int gemType = rand() % 5;
+                gems[13] = gemType;
+                printGems();
+            }
         }
+    }
+
+    if(comboed == 0) {
+        judgeAndJustyfyGems();
     }
 }
 
@@ -236,24 +234,7 @@ int battleWithMonster(Monster* m) {
     rondomShuffleGems();
     moveGem();
 
-    // 3comboまでしか対応できない
-    combo++;
-    i = judgePuzzle(combo);
-    if(i != 15) {
-        leftJustify(i);
-    }
-
-    combo++;
-    i = judgePuzzle(combo);
-    if(i != 15) {
-        leftJustify(i);
-    }
-
-    combo++;
-    i = judgePuzzle(combo);
-    if(i != 15) {
-        leftJustify(i);
-    }
+    judgeAndJustyfyGems(1);
 
     enemyAttack(&suraimu);
 }
