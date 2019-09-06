@@ -8,8 +8,8 @@
 int gems[14];
 char* letters[14] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N"};
 char* playerName;
-int partyHp = 600;
-int partyDefence;
+double partyHp = 600;
+int partyDefence = (10 + 10 + 5 + 15) / 4;
 
 enum {FIRE, WATER, WIND, EARTH, LIFE, EMPTY};
 // 構造体宣言
@@ -212,9 +212,23 @@ void moveGem() {
 
 // 敵の攻撃
 void enemyAttack(Monster* m) {
+    srand((unsigned int)time(NULL));
     int attack = (*m).attack;
-    partyHp -= attack;
-    printf("[%sのターン]\n~%s~の攻撃!%dのダメージを受けた\n", (*m).name, (*m).name, attack);
+    int rondomNumber = rand() % 21;
+    // printf("%d\n", rondomNumber);
+    int diff = attack - partyDefence;
+    // printf("%d\n", diff);
+    // (double)はキャスト int -> double
+    double swingWidth = ((double) (rondomNumber - 10) * 0.01) + 1.0;
+    // printf("%f\n", swingWidth);
+    double damage = (double) (diff) * swingWidth;
+    printf("%f\n", damage);
+    if(damage <= 0 || attack == partyDefence) {
+        damage = 1.0;
+    }
+    partyHp -= damage;
+    // %.0f 小数桁数は表示しない
+    printf("[%sのターン]\n~%s~の攻撃!%.0fのダメージを受けた\n", (*m).name, (*m).name, damage);
 }
 
 // モンスターとのバトル
