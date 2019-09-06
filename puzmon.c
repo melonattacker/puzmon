@@ -14,24 +14,24 @@ int partyDefence = (10 + 10 + 5 + 15) / 4;
 enum {FIRE, WATER, WIND, EARTH, LIFE, EMPTY};
 // 構造体宣言
 typedef struct {
-    char *name;
+    char* name;
     int hp;
     int maxHp;
-    char *type;
+    int type;
     int attack;
     int defence;
 } Monster;
 
-Monster suzaku = {"朱雀", 150, 150, "火", 25, 10};
-Monster seiryu = {"青龍", 150, 150, "風", 15, 10};
-Monster byakko = {"白虎", 150, 150, "土", 20, 5};
-Monster genbu = {"玄武", 150, 150, "土", 20, 15};
+Monster suzaku = {"朱雀", 150, 150, 0, 25, 10};
+Monster seiryu = {"青龍", 150, 150, 2, 15, 10};
+Monster byakko = {"白虎", 150, 150, 3, 20, 5};
+Monster genbu = {"玄武", 150, 150, 1, 20, 15};
 
-Monster suraimu = {"スライム", 100, 100, "水", 10, 5};
-Monster goburin = {"ゴブリン", 200, 200, "土", 20, 15};
-Monster ookomori = {"オオコウモリ", 300, 300, "風", 30, 25};
-Monster weawolf = {"ウェアウルフ", 400, 400, "風", 40, 30};
-Monster doragon = {"ドラゴン", 800, 800, "火", 50, 40};
+Monster suraimu = {"スライム", 100, 100, 1, 10, 5};
+Monster goburin = {"ゴブリン", 200, 200, 3, 20, 15};
+Monster ookomori = {"オオコウモリ", 300, 300, 2, 30, 25};
+Monster weawolf = {"ウェアウルフ", 400, 400, 2, 40, 30};
+Monster doragon = {"ドラゴン", 800, 800, 0, 50, 40};
 
 
 void printMonsterSummary(Monster* m) {
@@ -93,6 +93,52 @@ int askNumberOfLetter(char* letter) {
     return 1;
 }
 
+// 敵から味方への攻撃
+void enemyAttack(Monster* m) {
+    srand((unsigned int)time(NULL));
+    int attack = (*m).attack;
+    int rondomNumber = rand() % 21;
+    // printf("%d\n", rondomNumber);
+    int diff = attack - partyDefence;
+    // printf("%d\n", diff);
+    // (double)はキャスト int -> double
+    double swingWidth = ((double) (rondomNumber - 10) * 0.01) + 1.0;
+    // printf("%f\n", swingWidth);
+    double damage = (double) (diff) * swingWidth;
+    if(damage <= 0 || attack == partyDefence) {
+        damage = 1.0;
+    }
+    partyHp -= damage;
+    // %.0f 小数桁数は表示しない
+    printf("[%sのターン]\n~%s~の攻撃!%.0fのダメージを受けた\n", (*m).name, (*m).name, damage);
+}
+
+double judgeMonstersType(Monster* ally, Monster* enemy) {
+    int atype = (*ally).type;
+    int etype = (*enemy).type;
+    if((atype == 1 && etype == 0) || (atype == 0 && etype == 2) || (atype == 2 && etype == 3) || (atype == 3 && etype == 1)) {
+        return 2.0;
+    } else if((etype == 1 && atype == 0) || (etype == 0 && atype == 2) || (etype == 2 && atype == 3) || (etype == 3 && atype == 1))) {
+        return 0.5;
+    } else {
+        return 1.0;
+    }
+}
+
+// 味方から敵への攻撃
+void allyAttack(Monster* ally, Monster* enemy, int igems, int combo) {
+    srand((unsigned int)time(NULL));
+    int attack = (*ally).attack;
+    int defence = (*enemy).defence;
+    int diff = attack - defence;
+    double revision = judgeMonstersType(&ally, &enemy);
+    int rondomNumber = rand() % 21;
+    double swingWidth = ((double) (rondomNumber - 10) * 0.01) + 1.0;
+    double damage = (double) (diff) * revision * (1.5 ** (double) (igems - 3 + combo)) * swingWidth;
+    printf("%sに%.0fのダメージ！", (*enemy).name, damage);
+}
+
+
 // パズルを評価する
 void judgeGems(int i, int combo) {
     switch(gems[i]) {
@@ -139,7 +185,34 @@ void judgeAndJustyfyGems() {
     int combo = 0;
     int comboed = 1;
     for(int i = 0; i < 12; i++) {
-        if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0) {
+        if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0 && memcmp(&gems[i + 3], &gems[i + 4], 1) == 0) {
+            combo++;
+            comboed = 0;
+            judgeGems(i, combo);
+            printGems();
+            for(int j = 4; j > -1; j--) {
+                for(int k = 0; k < 14 - (i + j); k++) {
+                    gems[(i + j) + k] = gems[(i + j) + (k + 1)];
+                }
+                int gemType = rand() % 5;
+                gems[13] = gemType;
+                printGems();
+            }
+        } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0){
+            combo++;
+            comboed = 0;
+            judgeGems(i, combo);
+            printGems();
+            for(int j = 3; j > -1; j--) {
+                for(int k = 0; k < 14 - (i + j); k++) {
+                    gems[(i + j) + k] = gems[(i + j) + (k + 1)];
+                }
+                int gemType = rand() % 5;
+                gems[13] = gemType;
+                printGems();
+            }
+
+        } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0) {
             combo++;
             comboed = 0;
             judgeGems(i, combo);
@@ -152,7 +225,7 @@ void judgeAndJustyfyGems() {
                 gems[13] = gemType;
                 printGems();
             }
-        }
+        } 
     }
 
     if(comboed == 0) {
@@ -208,27 +281,6 @@ void moveGem() {
         printf("コマンドはA~Nまでの大文字2文字を入力してください (ex) A-D\n");
         moveGem();
     }
-}
-
-// 敵の攻撃
-void enemyAttack(Monster* m) {
-    srand((unsigned int)time(NULL));
-    int attack = (*m).attack;
-    int rondomNumber = rand() % 21;
-    // printf("%d\n", rondomNumber);
-    int diff = attack - partyDefence;
-    // printf("%d\n", diff);
-    // (double)はキャスト int -> double
-    double swingWidth = ((double) (rondomNumber - 10) * 0.01) + 1.0;
-    // printf("%f\n", swingWidth);
-    double damage = (double) (diff) * swingWidth;
-    printf("%f\n", damage);
-    if(damage <= 0 || attack == partyDefence) {
-        damage = 1.0;
-    }
-    partyHp -= damage;
-    // %.0f 小数桁数は表示しない
-    printf("[%sのターン]\n~%s~の攻撃!%.0fのダメージを受けた\n", (*m).name, (*m).name, damage);
 }
 
 // モンスターとのバトル
