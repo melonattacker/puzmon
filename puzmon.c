@@ -274,9 +274,6 @@ int judgeAndJustyfyGems(Monster* enemy) {
             allyId = judgeGems(i, combo);
             damage = allyAttack(allyId, enemy, 5, combo);
             enemyDied = decreaseEnemyHp(enemy, damage);
-            if(enemyDied == 0) {
-                return 0;
-            }
             printGems();
             for(int j = 4; j > -1; j--) {
                 for(int k = 0; k < 14 - (i + j); k++) {
@@ -286,15 +283,16 @@ int judgeAndJustyfyGems(Monster* enemy) {
                 gems[13] = gemType;
                 printGems();
             }
+            if(enemyDied == 0) {
+                return 0;
+            }
+            judgeAndJustyfyGems(enemy);
         } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0){
             combo++;
             comboed = 0;
             allyId = judgeGems(i, combo);
             damage = allyAttack(allyId, enemy, 4, combo);
             enemyDied = decreaseEnemyHp(enemy, damage);
-            if(enemyDied == 0) {
-                return 0;
-            }
             printGems();
             for(int j = 3; j > -1; j--) {
                 for(int k = 0; k < 14 - (i + j); k++) {
@@ -304,15 +302,16 @@ int judgeAndJustyfyGems(Monster* enemy) {
                 gems[13] = gemType;
                 printGems();
             }
+            if(enemyDied == 0) {
+                return 0;
+            }
+            judgeAndJustyfyGems(enemy);
         } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0) {
             combo++;
             comboed = 0;
             allyId = judgeGems(i, combo);
             damage = allyAttack(allyId, enemy, 3, combo);
             enemyDied = decreaseEnemyHp(enemy, damage);
-            if(enemyDied == 0) {
-                return 0;
-            }
             printGems();
             for(int j = 2; j > -1; j--) {
                 for(int k = 0; k < 14 - (i + j); k++) {
@@ -322,12 +321,12 @@ int judgeAndJustyfyGems(Monster* enemy) {
                 gems[13] = gemType;
                 printGems();
             }
+            if(enemyDied == 0) {
+                return 0;
+            }
+            judgeAndJustyfyGems(enemy);
         } 
     }
-
-    if(comboed == 0) {
-        judgeAndJustyfyGems(enemy);
-    } 
 
     return 1;
 }
