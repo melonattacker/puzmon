@@ -100,7 +100,7 @@ int askNumberOfLetter(char* letter) {
 }
 
 // 敵から味方への攻撃
-void enemyAttack(Monster* m) {
+int enemyAttack(Monster* m) {
     srand((unsigned int)time(NULL));
     int attack = (*m).attack;
     int rondomNumber = rand() % 21;
@@ -117,6 +117,11 @@ void enemyAttack(Monster* m) {
     partyHp -= damage;
     // %.0f 小数桁数は表示しない
     printf("[%sのターン]\n~%s~の攻撃!%.0fのダメージを受けた\n", (*m).name, (*m).name, damage);
+    if(partyHp <= 0) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 double judgeMonstersType(Monster* ally, Monster* enemy) {
@@ -270,7 +275,6 @@ int judgeAndJustyfyGems(Monster* enemy) {
     for(int i = 0; i < 12; i++) {
         if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0 && memcmp(&gems[i + 3], &gems[i + 4], 1) == 0) {
             combo++;
-            comboed = 0;
             allyId = judgeGems(i, combo);
             damage = allyAttack(allyId, enemy, 5, combo);
             enemyDied = decreaseEnemyHp(enemy, damage);
@@ -289,7 +293,6 @@ int judgeAndJustyfyGems(Monster* enemy) {
             judgeAndJustyfyGems(enemy);
         } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0){
             combo++;
-            comboed = 0;
             allyId = judgeGems(i, combo);
             damage = allyAttack(allyId, enemy, 4, combo);
             enemyDied = decreaseEnemyHp(enemy, damage);
@@ -308,7 +311,6 @@ int judgeAndJustyfyGems(Monster* enemy) {
             judgeAndJustyfyGems(enemy);
         } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0) {
             combo++;
-            comboed = 0;
             allyId = judgeGems(i, combo);
             damage = allyAttack(allyId, enemy, 3, combo);
             enemyDied = decreaseEnemyHp(enemy, damage);
@@ -395,10 +397,11 @@ int enemyCurrentHp(Monster* enemy) {
     }
 }
 
-void oneTurnOfButtle(Monster *m) {
+int oneTurnOfButtle(Monster *m) {
     int enemyMaxHp = (*m).hp;
     int enemyHp = enemyCurrentHp(m);
     int enemyDied;
+    int partyDied;
     printf("[%sのターン]", playerName);
     printf("------------------------------\n");
     printf("~%s~\nHP= %d / %d\n\n\n\n", (*m).name, enemyHp, enemyMaxHp);
@@ -411,15 +414,20 @@ void oneTurnOfButtle(Monster *m) {
     moveGem();
     enemyDied = judgeAndJustyfyGems(m);
     if(enemyDied != 0) {
-        enemyAttack(m);
+        partyDied = enemyAttack(m);
+        if(partyDied != 0) {
+            return 1;
+        }
         oneTurnOfButtle(m);
     } else {
         printf("%sに勝利した！\n\n", (*m).name);
+        return 0;
     }
 }
 
 
 int main(int argc, char** argv) {
+    int partyDied;
     playerName = *(argv + 1);
     printf("*** Puzzle & Monsters ***\n");
     printf("%sのパーティ(HP=600)はダンジョンに到達した\n", playerName);
@@ -435,14 +443,29 @@ int main(int argc, char** argv) {
     rondomShuffleGems();
 
     printf("~%s~が現れた！\n\n\n", (*&suraimu).name);
-    oneTurnOfButtle(&suraimu);
+    partyDied = oneTurnOfButtle(&suraimu);
+    if(partyDied == 0) {
+        printf("***GAME OVER***\n倒したモンスター数=%d", 0);
+    }
     printf("~%s~が現れた！\n\n\n", (*&goburin).name);
-    oneTurnOfButtle(&goburin);
+    partyDied = oneTurnOfButtle(&goburin);
+    if(partyDied == 0) {
+        printf("***GAME OVER***\n倒したモンスター数=%d", 1);
+    }
     printf("~%s~が現れた！\n\n\n", (*&ookomori).name);
-    oneTurnOfButtle(&ookomori);
+    partyDied = oneTurnOfButtle(&ookomori);
+    if(partyDied == 0) {
+        printf("***GAME OVER***\n倒したモンスター数=%d", 2);
+    }
     printf("~%s~が現れた！\n\n\n", (*&weawolf).name);
-    oneTurnOfButtle(&weawolf);
+    partyDied = oneTurnOfButtle(&weawolf);
+    if(partyDied == 0) {
+        printf("***GAME OVER***\n倒したモンスター数=%d", 3);
+    }
     printf("~%s~が現れた！\n\n\n", (*&doragon).name);
-    oneTurnOfButtle(&doragon);
+    partyDied = oneTurnOfButtle(&doragon);
+    if(partyDied == 0) {
+        printf("***GAME OVER***\n倒したモンスター数=%d", 4);
+    }
     return 0;
 }
