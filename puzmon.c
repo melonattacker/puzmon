@@ -438,7 +438,6 @@ int oneTurnOfButtle(Monster *m) {
         }
         oneTurnOfButtle(m);
     } else {
-        printf("%sに勝利した！\n\n", (*m).name);
         return 0;
     }
 }
@@ -466,29 +465,34 @@ int main(int argc, char** argv) {
         printf("***GAME OVER***\n倒したモンスター数=%d", 0);
         return 1;
     }
-    printf("~%s~が現れた！\n\n\n", (*&goburin).name);
+    printf("~%s~に勝利した！\n\n", (*&suraimu).name);
+    printf("#%s#が現れた！\n\n\n", (*&goburin).name);
     partyDied = oneTurnOfButtle(&goburin);
     if(partyDied != 0) {
         printf("***GAME OVER***\n倒したモンスター数=%d", 1);
         return 1;
     }
-    printf("~%s~が現れた！\n\n\n", (*&ookomori).name);
+    printf("#%s#に勝利した！\n\n", (*&goburin).name);
+    printf("@%s@が現れた！\n\n\n", (*&ookomori).name);
     partyDied = oneTurnOfButtle(&ookomori);
     if(partyDied != 0) {
         printf("***GAME OVER***\n倒したモンスター数=%d", 2);
         return 1;
     }
-    printf("~%s~が現れた！\n\n\n", (*&weawolf).name);
+    printf("@%s@に勝利した！\n\n", (*&ookomori).name);
+    printf("@%s@が現れた！\n\n\n", (*&weawolf).name);
     partyDied = oneTurnOfButtle(&weawolf);
     if(partyDied != 0) {
         printf("***GAME OVER***\n倒したモンスター数=%d", 3);
         return 1;
     }
-    printf("~%s~が現れた！\n\n\n", (*&doragon).name);
+    printf("@%s@に勝利した！\n\n", (*&weawolf).name);
+    printf("$%s$が現れた！\n\n\n", (*&doragon).name);
     partyDied = oneTurnOfButtle(&doragon);
     if(partyDied != 0) {
         printf("***GAME OVER***\n倒したモンスター数=%d", 4);
         return 1;
     }
+    printf("$%s$に勝利した！\n\n", (*&doragon).name);
     return 0;
 }
