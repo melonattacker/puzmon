@@ -263,6 +263,7 @@ int judgeAndJustyfyGems(Monster* enemy) {
     srand((unsigned int)time(NULL));
     int combo = 0;
     int comboed = 1;
+    int count = 0;
     int allyId;
     int damage;
     int enemyDied;
@@ -303,7 +304,6 @@ int judgeAndJustyfyGems(Monster* enemy) {
                 gems[13] = gemType;
                 printGems();
             }
-
         } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0) {
             combo++;
             comboed = 0;
@@ -325,11 +325,11 @@ int judgeAndJustyfyGems(Monster* enemy) {
         } 
     }
 
-    return 1;
-
     if(comboed == 0) {
         judgeAndJustyfyGems(enemy);
-    }
+    } 
+
+    return 1;
 }
 
 
@@ -396,13 +396,10 @@ int enemyCurrentHp(Monster* enemy) {
     }
 }
 
-// countがうまくいってない
-int oneTurnOfButtle(Monster *m) {
+void oneTurnOfButtle(Monster *m) {
     int enemyMaxHp = (*m).hp;
     int enemyHp = enemyCurrentHp(m);
     int enemyDied;
-    int count = 0;
-    count++;
     printf("[%sのターン]", playerName);
     printf("------------------------------\n");
     printf("~%s~\nHP= %d / %d\n\n\n\n", (*m).name, enemyHp, enemyMaxHp);
@@ -410,31 +407,18 @@ int oneTurnOfButtle(Monster *m) {
     printf("HP= %.0f / %d\n", partyHp, 600);
     printf("------------------------------\n");
     printf("A B C D E F G H I J K L M N\n");
-    if(count == 1) {
-        rondomShuffleGems();
-        printGems();
-        printf("------------------------------\n");
-    } else {
-        printGems();
-    }
+    printGems();
+    printf("------------------------------\n");
     moveGem();
     enemyDied = judgeAndJustyfyGems(m);
     if(enemyDied != 0) {
         enemyAttack(m);
         oneTurnOfButtle(m);
     } else {
-        printf("終わり！！！！！！！！！！！！\n");
+        printf("%sに勝利した！\n\n", (*m).name);
     }
 }
 
-// モンスターとのバトル
-int battleWithMonster(Monster* m) {
-    int enemyDied;
-    printf("~%s~が現れた！\n\n\n", (*m).name);
-
-    oneTurnOfButtle(m);
-    
-}
 
 int main(int argc, char** argv) {
     playerName = *(argv + 1);
@@ -449,6 +433,17 @@ int main(int argc, char** argv) {
 
     printf("------------------------\n\n\n");
 
-    battleWithMonster(&suraimu);
+    rondomShuffleGems();
+
+    printf("~%s~が現れた！\n\n\n", (*&suraimu).name);
+    oneTurnOfButtle(&suraimu);
+    printf("~%s~が現れた！\n\n\n", (*&goburin).name);
+    oneTurnOfButtle(&goburin);
+    printf("~%s~が現れた！\n\n\n", (*&ookomori).name);
+    oneTurnOfButtle(&ookomori);
+    printf("~%s~が現れた！\n\n\n", (*&weawolf).name);
+    oneTurnOfButtle(&weawolf);
+    printf("~%s~が現れた！\n\n\n", (*&doragon).name);
+    oneTurnOfButtle(&doragon);
     return 0;
 }
