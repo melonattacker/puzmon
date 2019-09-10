@@ -177,6 +177,15 @@ double allyAttack(int allyId, Monster* enemy, int igems, int combo) {
     return damage;
 }
 
+void healHp(int igems, int combo) {
+    int rondomNumber = rand() % 21;
+    double swingWidth = ((double) (rondomNumber - 10) * 0.01) + 1.0;
+    double power = pow(1.5, (double) (igems - 3 + combo));
+    double healPower = 20.0 * power * swingWidth;
+    partyHp += healPower;
+    printf("%.0fHPを回復した！\n", healPower);
+}
+
 
 // パズルを評価する
 int judgeGems(int i, int combo) {
@@ -276,6 +285,9 @@ int judgeAndJustyfyGems(Monster* enemy) {
         if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0 && memcmp(&gems[i + 3], &gems[i + 4], 1) == 0) {
             combo++;
             allyId = judgeGems(i, combo);
+            if(allyId == 4) {
+                healHp(5, combo);
+            }
             damage = allyAttack(allyId, enemy, 5, combo);
             enemyDied = decreaseEnemyHp(enemy, damage);
             printGems();
@@ -294,6 +306,9 @@ int judgeAndJustyfyGems(Monster* enemy) {
         } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0){
             combo++;
             allyId = judgeGems(i, combo);
+            if(allyId == 4) {
+                healHp(4, combo);
+            }
             damage = allyAttack(allyId, enemy, 4, combo);
             enemyDied = decreaseEnemyHp(enemy, damage);
             printGems();
@@ -312,6 +327,9 @@ int judgeAndJustyfyGems(Monster* enemy) {
         } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0) {
             combo++;
             allyId = judgeGems(i, combo);
+            if(allyId == 4) {
+                healHp(3, combo);
+            }
             damage = allyAttack(allyId, enemy, 3, combo);
             enemyDied = decreaseEnemyHp(enemy, damage);
             printGems();
@@ -444,28 +462,33 @@ int main(int argc, char** argv) {
 
     printf("~%s~が現れた！\n\n\n", (*&suraimu).name);
     partyDied = oneTurnOfButtle(&suraimu);
-    if(partyDied == 0) {
+    if(partyDied != 0) {
         printf("***GAME OVER***\n倒したモンスター数=%d", 0);
+        return 1;
     }
     printf("~%s~が現れた！\n\n\n", (*&goburin).name);
     partyDied = oneTurnOfButtle(&goburin);
-    if(partyDied == 0) {
+    if(partyDied != 0) {
         printf("***GAME OVER***\n倒したモンスター数=%d", 1);
+        return 1;
     }
     printf("~%s~が現れた！\n\n\n", (*&ookomori).name);
     partyDied = oneTurnOfButtle(&ookomori);
-    if(partyDied == 0) {
+    if(partyDied != 0) {
         printf("***GAME OVER***\n倒したモンスター数=%d", 2);
+        return 1;
     }
     printf("~%s~が現れた！\n\n\n", (*&weawolf).name);
     partyDied = oneTurnOfButtle(&weawolf);
-    if(partyDied == 0) {
+    if(partyDied != 0) {
         printf("***GAME OVER***\n倒したモンスター数=%d", 3);
+        return 1;
     }
     printf("~%s~が現れた！\n\n\n", (*&doragon).name);
     partyDied = oneTurnOfButtle(&doragon);
-    if(partyDied == 0) {
+    if(partyDied != 0) {
         printf("***GAME OVER***\n倒したモンスター数=%d", 4);
+        return 1;
     }
     return 0;
 }
