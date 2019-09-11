@@ -12,7 +12,7 @@ char* playerName;
 double partyHp = 600.0;
 int partyDefence = (10 + 10 + 5 + 15) / 4;
 
-double suraimuHp = 75.0;
+double suraimuHp = 100.0;
 double goburinHp = 200.0;
 double ookomoriHp = 300.0;
 double weawolfHp = 400.0;
@@ -134,16 +134,16 @@ int enemyAttack(Monster* m) {
     // %.0f 小数桁数は表示しない
     switch((*m).type) {
         case FIRE:
-            printf("[%sのターン]\n[\x1b[31m~%s~\033[mの攻撃!%.0fのダメージを受けた\n\n\n", (*m).name, (*m).name, damage);
+            printf("[%sのターン]\n\x1b[31m~%s~\033[mの攻撃!%.0fのダメージを受けた\n\n\n", (*m).name, (*m).name, damage);
             break;
         case WATER:
-            printf("[%sのターン]\n[\x1b[34m~%s~\033[mの攻撃!%.0fのダメージを受けた\n\n\n", (*m).name, (*m).name, damage);
+            printf("[%sのターン]\n\x1b[34m~%s~\033[mの攻撃!%.0fのダメージを受けた\n\n\n", (*m).name, (*m).name, damage);
             break;
         case WIND:
-            printf("[%sのターン]\n[\x1b[36m~%s~\033[mの攻撃!%.0fのダメージを受けた\n\n\n", (*m).name, (*m).name, damage);
+            printf("[%sのターン]\n\x1b[36m~%s~\033[mの攻撃!%.0fのダメージを受けた\n\n\n", (*m).name, (*m).name, damage);
             break;
         case EARTH:
-            printf("[%sのターン]\n[\x1b[33m~%s~\033[mの攻撃!%.0fのダメージを受けた\n\n\n", (*m).name, (*m).name, damage);
+            printf("[%sのターン]\n\x1b[33m~%s~\033[mの攻撃!%.0fのダメージを受けた\n\n\n", (*m).name, (*m).name, damage);
             break;
         default:
             break;
@@ -279,18 +279,13 @@ int judgeGems(int i, int combo) {
 int decreaseEnemyHp(Monster* enemy, double damage) {
     if(enemy == &suraimu) {
         suraimuHp -= damage;
-        printf("%f\n", damage);
-        printf("%f\n", suraimuHp);
         if(suraimuHp <= 0.0) {
-            printf("0だよ");
             return 0;
         } else {
-            printf("1だよ");
             return 1;
         }
     } else if(enemy == &goburin) {
         goburinHp -= damage;
-        printf("%d\n", goburinHp);
         if(goburinHp <= 0.0) {
             return 0;
         } else {
@@ -320,9 +315,10 @@ int decreaseEnemyHp(Monster* enemy, double damage) {
     }
 }
 
-int judgeAndJustyfyGems(Monster* enemy) {
+// enemy死亡 => 0 コンボした => 1 コンボなし => 2
+int judgeAndJustyfyGems(Monster* enemy, int combo) {
     srand((unsigned int)time(NULL));
-    int combo = 0;
+    int comboed = 1;
     int count = 0;
     int allyId;
     double damage;
@@ -332,8 +328,7 @@ int judgeAndJustyfyGems(Monster* enemy) {
     for(int i = 0; i < 12; i++) {
         // 5個消し
         if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0 && memcmp(&gems[i + 3], &gems[i + 4], 1) == 0) {
-            combo++;
-            printf("コンボ数: %d\n", combo);
+            comboed = 0;
             allyId = judgeGems(i, combo);
             if(allyId == 4) {
                 healHp(5, combo);
@@ -352,20 +347,13 @@ int judgeAndJustyfyGems(Monster* enemy) {
                 printf("\n");
             }
 
-            printf("enemyDied: %d", enemyDied);
             if(enemyDied == 0) {
-                printf("0を返したぞ");
                 stateOfEnemy = 0;
                 break;
-            } else {
-                printf("judgeする\n");
-                judgeAndJustyfyGems(enemy);
-            }
-    
+            } 
         // 4個消し
         } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0){
-            combo++;
-            printf("コンボ数: %d\n", combo);
+            comboed = 0;
             allyId = judgeGems(i, combo);
             if(allyId == 4) {
                 healHp(4, combo);
@@ -383,19 +371,13 @@ int judgeAndJustyfyGems(Monster* enemy) {
                 printGems();
                 printf("\n");
             }
-            printf("enemyDied: %d", enemyDied);
             if(enemyDied == 0) {
-                printf("0を返したぞ");
                 stateOfEnemy = 0;
                 break;
-            } else {
-                printf("judgeする\n");
-                judgeAndJustyfyGems(enemy);
             }
         // 3個消し
         } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0) {
-            combo++;
-            printf("コンボ数: %d\n", combo);
+            comboed = 0;
             allyId = judgeGems(i, combo);
             if(allyId == 4) {
                 healHp(3, combo);
@@ -413,22 +395,36 @@ int judgeAndJustyfyGems(Monster* enemy) {
                 printGems();
                 printf("\n");
             }
-            printf("enemyDied: %d", enemyDied);
             if(enemyDied == 0) {
-                printf("0を返したぞ");
                 stateOfEnemy = 0;
                 break;
-            } else {
-                printf("judgeする\n");
-                judgeAndJustyfyGems(enemy);
-            }
+            } 
         } 
     }
 
-    printf("enemy: %d\n", stateOfEnemy);
     if(stateOfEnemy == 0) {
         return 0;
     } else {
+        if(comboed == 0) {
+            return 1;
+        } else if(comboed == 1) {
+            return 2;
+        }
+    }
+}
+
+// 敵死亡 => 0 コンボなし => 1
+int onePuzzle(Monster* enemy) {
+    int combo = 0;
+    int result;
+    
+    combo++;
+    result = judgeAndJustyfyGems(enemy, combo);
+    if(result == 0) {
+        return 0;
+    } else if(result == 1) {
+        onePuzzle(enemy);
+    } else if(result == 2) {
         return 1;
     }
 }
@@ -505,7 +501,7 @@ int enemyCurrentHp(Monster* enemy) {
 int oneTurnOfButtle(Monster *m) {
     int enemyMaxHp = (*m).hp;
     int enemyHp = enemyCurrentHp(m);
-    int enemyDied;
+    int enemyDiedOrPuzzleFinished;
     int partyDied;
     printf("[%sのターン]", playerName);
     printf("------------------------------\n");
@@ -532,18 +528,16 @@ int oneTurnOfButtle(Monster *m) {
     printGems();
     printf("------------------------------\n");
     moveGem();
-    enemyDied = judgeAndJustyfyGems(m);
-    printf("%dだぷ\n", enemyDied);
-    if(enemyDied != 0) {
+    enemyDiedOrPuzzleFinished = onePuzzle(m);
+    if(enemyDiedOrPuzzleFinished == 0) {
+        return 0;
+    } else if(enemyDiedOrPuzzleFinished == 1) {
         partyDied = enemyAttack(m);
         if(partyDied != 0) {
             return 1;
         } else {
             oneTurnOfButtle(m);
         }
-    } else if(enemyDied == 0) {
-        printf("main関数に0を返した\n");
-        return 0;
     }
 }
 
