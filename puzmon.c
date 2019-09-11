@@ -12,11 +12,11 @@ char* playerName;
 double partyHp = 600.0;
 int partyDefence = (10 + 10 + 5 + 15) / 4;
 
-int suraimuHp = 100;
-int goburinHp = 200;
-int ookomoriHp = 300;
-int weawolfHp = 400;
-int doragonHp = 800;
+double suraimuHp = 75.0;
+double goburinHp = 200.0;
+double ookomoriHp = 300.0;
+double weawolfHp = 400.0;
+double doragonHp = 800.0;
 
 enum {FIRE, WATER, WIND, EARTH, LIFE, EMPTY};
 // 構造体宣言
@@ -46,16 +46,16 @@ void printMonsterSummary(Monster* m) {
     int type = (*m).type;
     switch(type) {
         case FIRE:
-            printf("$%s$ HP=%d 攻撃=%d 防御=%d\n", (*m).name, (*m).hp, (*m).attack, (*m).defence);
+            printf("\x1b[31m$%s$\033[m HP=%d 攻撃=%d 防御=%d\n", (*m).name, (*m).hp, (*m).attack, (*m).defence);
             break;
         case WATER:
-            printf("~%s~ HP=%d 攻撃=%d 防御=%d\n", (*m).name, (*m).hp, (*m).attack, (*m).defence);
+            printf("\x1b[34m~%s~\033[m HP=%d 攻撃=%d 防御=%d\n", (*m).name, (*m).hp, (*m).attack, (*m).defence);
             break;
         case WIND:
-            printf("@%s@ HP=%d 攻撃=%d 防御=%d\n", (*m).name, (*m).hp, (*m).attack, (*m).defence);
+            printf("\x1b[36m@%s@\033[m HP=%d 攻撃=%d 防御=%d\n", (*m).name, (*m).hp, (*m).attack, (*m).defence);
             break;
         case EARTH:
-            printf("#%s# HP=%d 攻撃=%d 防御=%d\n", (*m).name, (*m).hp, (*m).attack, (*m).defence);
+            printf("\x1b[33m#%s#\033[m HP=%d 攻撃=%d 防御=%d\n", (*m).name, (*m).hp, (*m).attack, (*m).defence);
             break;
         default:
             break;
@@ -67,19 +67,19 @@ void printGems() {
     for(int i = 0; i < 14; i++) {
         switch(gems[i]) {
             case FIRE:
-                printf("$");
+                printf("\x1b[41m$\x1b[m");
                 break;
             case WATER:
-                printf("~");
+                printf("\x1b[44m~\x1b[m");
                 break;
             case WIND:
-                printf("@");
+                printf("\x1b[46m@\x1b[m");
                 break;
             case EARTH:
-                printf("#");
+                printf("\x1b[43m#\x1b[m");
                 break;
             case LIFE:
-                printf("&");
+                printf("\x1b[42m&\x1b[m");
                 break;
         }
         printf(" ");
@@ -132,7 +132,22 @@ int enemyAttack(Monster* m) {
     }
     partyHp -= damage;
     // %.0f 小数桁数は表示しない
-    printf("[%sのターン]\n~%s~の攻撃!%.0fのダメージを受けた\n\n\n", (*m).name, (*m).name, damage);
+    switch((*m).type) {
+        case FIRE:
+            printf("[%sのターン]\n[\x1b[31m~%s~\033[mの攻撃!%.0fのダメージを受けた\n\n\n", (*m).name, (*m).name, damage);
+            break;
+        case WATER:
+            printf("[%sのターン]\n[\x1b[34m~%s~\033[mの攻撃!%.0fのダメージを受けた\n\n\n", (*m).name, (*m).name, damage);
+            break;
+        case WIND:
+            printf("[%sのターン]\n[\x1b[36m~%s~\033[mの攻撃!%.0fのダメージを受けた\n\n\n", (*m).name, (*m).name, damage);
+            break;
+        case EARTH:
+            printf("[%sのターン]\n[\x1b[33m~%s~\033[mの攻撃!%.0fのダメージを受けた\n\n\n", (*m).name, (*m).name, damage);
+            break;
+        default:
+            break;
+    }
     if(partyHp <= 0) {
         return 1;
     } else {
@@ -214,37 +229,37 @@ int judgeGems(int i, int combo) {
     switch(gems[i]) {
         case FIRE:
             if(combo > 1) {
-                printf("$朱雀$の攻撃！ %d COMBO!\n", combo);
+                printf("\x1b[31m$朱雀$\033[mの攻撃！ %d COMBO!\n", combo);
                 return 0;
             } else {
-                printf("$朱雀$の攻撃！ \n");
+                printf("\x1b[31m$朱雀$\033[mの攻撃！ \n");
                 return 0;
             }
             break;      
         case WATER:
             if(combo > 1) {
-                printf("~玄武~の攻撃！ %d COMBO!\n", combo);
+                printf("\x1b[34m~玄武~\033[mの攻撃！ %d COMBO!\n", combo);
                 return 3;
             } else {
-                printf("~玄武~の攻撃！ \n");
+                printf("\x1b[34m~玄武~\033[mの攻撃！ \n");
                 return 3;
             }
             break;
         case WIND:
             if(combo > 1) {
-                printf("@青龍@の攻撃！ %d COMBO!\n", combo);
+                printf("\x1b[36m@青龍@\033[mの攻撃！ %d COMBO!\n", combo);
                 return 1;
             } else {
-                printf("@青龍@の攻撃！ \n");
+                printf("\x1b[36m@青龍@\033[mの攻撃！ \n");
                 return 1;
             }
             break;
         case EARTH:
             if(combo > 1) {
-                printf("#白虎#の攻撃！ %d COMBO!\n", combo);
+                printf("\x1b[33m#白虎#\033[mの攻撃！ %d COMBO!\n", combo);
                 return 2;
             } else {
-                printf("#白虎#の攻撃！ \n");
+                printf("\x1b[33m#白虎#\033[mの攻撃！ \n");
                 return 2;
             }
             break;
@@ -261,51 +276,64 @@ int judgeGems(int i, int combo) {
 }
 
 // 0 => 敵死亡 1 => 敵生きてる
-int decreaseEnemyHp(Monster* enemy, int damage) {
+int decreaseEnemyHp(Monster* enemy, double damage) {
     if(enemy == &suraimu) {
         suraimuHp -= damage;
-        if(suraimuHp <= 0) {
+        printf("%f\n", damage);
+        printf("%f\n", suraimuHp);
+        if(suraimuHp <= 0.0) {
+            printf("0だよ");
             return 0;
+        } else {
+            printf("1だよ");
+            return 1;
         }
-        return 1;
     } else if(enemy == &goburin) {
         goburinHp -= damage;
-        if(goburinHp <= 0) {
+        printf("%d\n", goburinHp);
+        if(goburinHp <= 0.0) {
             return 0;
+        } else {
+            return 1;
         }
-        return 1;
     } else if(enemy == &ookomori) {
         ookomoriHp -= damage;
-        if(ookomoriHp <= 0) {
+        if(ookomoriHp <= 0.0) {
             return 0;
+        } else {
+            return 1;
         }
-        return 1;
     } else if(enemy == &weawolf) {
         weawolfHp -= damage;
-        if(weawolfHp <= 0) {
+        if(weawolfHp <= 0.0) {
             return 0;
-        } 
-        return 1;
+        } else {
+            return 1;
+        }
     } else if(enemy == &doragon) {
         doragonHp -= damage;
-        if(doragonHp <= 0) {
+        if(doragonHp <= 0.0) {
             return 0;
+        } else {
+            return 1;
         }
-        return 1;
     }
 }
 
 int judgeAndJustyfyGems(Monster* enemy) {
     srand((unsigned int)time(NULL));
     int combo = 0;
-    int comboed = 1;
     int count = 0;
     int allyId;
-    int damage;
-    int enemyDied;
+    double damage;
+    int enemyDied = 1;
+    int stateOfEnemy = 1;
+
     for(int i = 0; i < 12; i++) {
+        // 5個消し
         if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0 && memcmp(&gems[i + 3], &gems[i + 4], 1) == 0) {
             combo++;
+            printf("コンボ数: %d\n", combo);
             allyId = judgeGems(i, combo);
             if(allyId == 4) {
                 healHp(5, combo);
@@ -313,6 +341,7 @@ int judgeAndJustyfyGems(Monster* enemy) {
             damage = allyAttack(allyId, enemy, 5, combo);
             enemyDied = decreaseEnemyHp(enemy, damage);
             printGems();
+            printf("\n");
             for(int j = 4; j > -1; j--) {
                 for(int k = 0; k < 14 - (i + j); k++) {
                     gems[(i + j) + k] = gems[(i + j) + (k + 1)];
@@ -320,13 +349,23 @@ int judgeAndJustyfyGems(Monster* enemy) {
                 int gemType = rand() % 5;
                 gems[13] = gemType;
                 printGems();
+                printf("\n");
             }
+
+            printf("enemyDied: %d", enemyDied);
             if(enemyDied == 0) {
-                return 0;
+                printf("0を返したぞ");
+                stateOfEnemy = 0;
+                break;
+            } else {
+                printf("judgeする\n");
+                judgeAndJustyfyGems(enemy);
             }
-            judgeAndJustyfyGems(enemy);
+    
+        // 4個消し
         } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0){
             combo++;
+            printf("コンボ数: %d\n", combo);
             allyId = judgeGems(i, combo);
             if(allyId == 4) {
                 healHp(4, combo);
@@ -334,6 +373,7 @@ int judgeAndJustyfyGems(Monster* enemy) {
             damage = allyAttack(allyId, enemy, 4, combo);
             enemyDied = decreaseEnemyHp(enemy, damage);
             printGems();
+            printf("\n");
             for(int j = 3; j > -1; j--) {
                 for(int k = 0; k < 14 - (i + j); k++) {
                     gems[(i + j) + k] = gems[(i + j) + (k + 1)];
@@ -341,13 +381,21 @@ int judgeAndJustyfyGems(Monster* enemy) {
                 int gemType = rand() % 5;
                 gems[13] = gemType;
                 printGems();
+                printf("\n");
             }
+            printf("enemyDied: %d", enemyDied);
             if(enemyDied == 0) {
-                return 0;
+                printf("0を返したぞ");
+                stateOfEnemy = 0;
+                break;
+            } else {
+                printf("judgeする\n");
+                judgeAndJustyfyGems(enemy);
             }
-            judgeAndJustyfyGems(enemy);
+        // 3個消し
         } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0) {
             combo++;
+            printf("コンボ数: %d\n", combo);
             allyId = judgeGems(i, combo);
             if(allyId == 4) {
                 healHp(3, combo);
@@ -355,6 +403,7 @@ int judgeAndJustyfyGems(Monster* enemy) {
             damage = allyAttack(allyId, enemy, 3, combo);
             enemyDied = decreaseEnemyHp(enemy, damage);
             printGems();
+            printf("\n");
             for(int j = 2; j > -1; j--) {
                 for(int k = 0; k < 14 - (i + j); k++) {
                     gems[(i + j) + k] = gems[(i + j) + (k + 1)];
@@ -362,15 +411,26 @@ int judgeAndJustyfyGems(Monster* enemy) {
                 int gemType = rand() % 5;
                 gems[13] = gemType;
                 printGems();
+                printf("\n");
             }
+            printf("enemyDied: %d", enemyDied);
             if(enemyDied == 0) {
-                return 0;
+                printf("0を返したぞ");
+                stateOfEnemy = 0;
+                break;
+            } else {
+                printf("judgeする\n");
+                judgeAndJustyfyGems(enemy);
             }
-            judgeAndJustyfyGems(enemy);
         } 
     }
 
-    return 1;
+    printf("enemy: %d\n", stateOfEnemy);
+    if(stateOfEnemy == 0) {
+        return 0;
+    } else {
+        return 1;
+    }
 }
 
 
@@ -399,20 +459,24 @@ void moveGem() {
         if(index_cmd1 < index_cmd2) {
             diff_index = index_cmd2 - index_cmd1;
             printGems();
+            printf("\n");
             for(int i = 0; i < diff_index; i++) {
                 int s = gems[index_cmd1 + i];
                 gems[index_cmd1 + i] = gems[index_cmd1 + i + 1];
                 gems[index_cmd1 + i + 1] = s;
                 printGems();
+                printf("\n");
             }
         } else {
             diff_index = index_cmd1 - index_cmd2;
             printGems();
+            printf("\n");
             for(int i = 0; i < diff_index; i++) {
                 int t = gems[index_cmd2 + i];
                 gems[index_cmd2 + i] = gems[index_cmd2 + i + 1];
                 gems[index_cmd2 + i + 1] = t;
                 printGems();
+                printf("\n");
             }
         }
         printf("\n");
@@ -437,6 +501,7 @@ int enemyCurrentHp(Monster* enemy) {
     }
 }
 
+// enemy死 => 0 party死 => 1 enemyもpartyも生きてる => 続行
 int oneTurnOfButtle(Monster *m) {
     int enemyMaxHp = (*m).hp;
     int enemyHp = enemyCurrentHp(m);
@@ -444,8 +509,23 @@ int oneTurnOfButtle(Monster *m) {
     int partyDied;
     printf("[%sのターン]", playerName);
     printf("------------------------------\n");
-    printf("~%s~\nHP= %d / %d\n\n\n\n", (*m).name, enemyHp, enemyMaxHp);
-    printf("$朱雀$ @青龍@ #白虎# ~玄武~\n");
+    switch((*m).type) {
+        case FIRE:
+            printf("\x1b[31m$%s$\033[m\nHP= %d / %d\n\n\n\n", (*m).name, enemyHp, enemyMaxHp);
+            break;
+        case WATER:
+            printf("\x1b[34m~%s~\033[m\nHP= %d / %d\n\n\n\n", (*m).name, enemyHp, enemyMaxHp);
+            break;
+        case WIND:
+            printf("\x1b[36m@%s@\033[m\nHP= %d / %d\n\n\n\n", (*m).name, enemyHp, enemyMaxHp);
+            break;
+        case EARTH:
+            printf("\x1b[33m#%s#\033[m\nHP= %d / %d\n\n\n\n", (*m).name, enemyHp, enemyMaxHp);
+            break;
+        default:
+            break;
+    }
+    printf("\x1b[31m$朱雀$\033[m \x1b[36m@青龍@\033[m \x1b[33m#白虎#\033[m \x1b[34m~玄武~\033[m\n");
     printf("HP= %.0f / %d\n", partyHp, 600);
     printf("------------------------------\n");
     printf("A B C D E F G H I J K L M N\n");
@@ -453,13 +533,16 @@ int oneTurnOfButtle(Monster *m) {
     printf("------------------------------\n");
     moveGem();
     enemyDied = judgeAndJustyfyGems(m);
+    printf("%dだぷ\n", enemyDied);
     if(enemyDied != 0) {
         partyDied = enemyAttack(m);
         if(partyDied != 0) {
             return 1;
+        } else {
+            oneTurnOfButtle(m);
         }
-        oneTurnOfButtle(m);
-    } else {
+    } else if(enemyDied == 0) {
+        printf("main関数に0を返した\n");
         return 0;
     }
 }
@@ -481,40 +564,40 @@ int main(int argc, char** argv) {
 
     rondomShuffleGems();
 
-    printf("~%s~が現れた！\n\n\n", (*&suraimu).name);
+    printf("\x1b[34m~%s~\033[mが現れた！\n\n\n", (*&suraimu).name);
     partyDied = oneTurnOfButtle(&suraimu);
     if(partyDied != 0) {
         printf("***GAME OVER***\n倒したモンスター数=%d\n", 0);
         return 1;
     }
-    printf("~%s~に勝利した！\n\n", (*&suraimu).name);
-    printf("#%s#が現れた！\n\n\n", (*&goburin).name);
+    printf("\x1b[34m~%s~\033[mに勝利した！\n\n", (*&suraimu).name);
+    printf("\x1b[33m#%s#\033[mが現れた！\n\n\n", (*&goburin).name);
     partyDied = oneTurnOfButtle(&goburin);
     if(partyDied != 0) {
         printf("***GAME OVER***\n倒したモンスター数=%d\n", 1);
         return 1;
     }
-    printf("#%s#に勝利した！\n\n", (*&goburin).name);
-    printf("@%s@が現れた！\n\n\n", (*&ookomori).name);
+    printf("\x1b[33m#%s#\033[mに勝利した！\n\n", (*&goburin).name);
+    printf("\x1b[36m@%s@\033[mが現れた！\n\n\n", (*&ookomori).name);
     partyDied = oneTurnOfButtle(&ookomori);
     if(partyDied != 0) {
         printf("***GAME OVER***\n倒したモンスター数=%d\n", 2);
         return 1;
     }
-    printf("@%s@に勝利した！\n\n", (*&ookomori).name);
-    printf("@%s@が現れた！\n\n\n", (*&weawolf).name);
+    printf("\x1b[36m@%s@\033[mに勝利した！\n\n", (*&ookomori).name);
+    printf("\x1b[36m@%s@\033[mが現れた！\n\n\n", (*&weawolf).name);
     partyDied = oneTurnOfButtle(&weawolf);
     if(partyDied != 0) {
         printf("***GAME OVER***\n倒したモンスター数=%d\n", 3);
         return 1;
     }
-    printf("@%s@に勝利した！\n\n", (*&weawolf).name);
-    printf("$%s$が現れた！\n\n\n", (*&doragon).name);
+    printf("\x1b[36m@%s@\033[mに勝利した！\n\n", (*&weawolf).name);
+    printf("\x1b[31m$%s$\033[mが現れた！\n\n\n", (*&doragon).name);
     partyDied = oneTurnOfButtle(&doragon);
     if(partyDied != 0) {
         printf("***GAME OVER***\n倒したモンスター数=%d\n", 4);
         return 1;
     }
-    printf("$%s$に勝利した！\n\n", (*&doragon).name);
+    printf("\x1b[31m$%s$\033[mに勝利した！\n\n", (*&doragon).name);
     return 0;
 }
