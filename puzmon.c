@@ -30,10 +30,10 @@ typedef struct {
     int defence;
 } Monster;
 
-Monster suzaku = {0, "朱雀", 150, 150, 0, 25, 10};
-Monster seiryu = {1, "青龍", 150, 150, 2, 15, 10};
-Monster byakko = {2, "白虎", 150, 150, 3, 20, 5};
-Monster genbu = {3, "玄武", 150, 150, 1, 20, 15};
+Monster suzaku = {0, "朱雀", 150, 150, 0, 45, 10};
+Monster seiryu = {1, "青龍", 150, 150, 2, 35, 10};
+Monster byakko = {2, "白虎", 150, 150, 3, 40, 5};
+Monster genbu = {3, "玄武", 150, 150, 1, 40, 15};
 
 Monster suraimu = {0, "スライム", 100, 100, 1, 10, 5};
 Monster goburin = {1, "ゴブリン", 200, 200, 3, 20, 15};
@@ -43,7 +43,23 @@ Monster doragon = {4, "ドラゴン", 800, 800, 0, 50, 40};
 
 
 void printMonsterSummary(Monster* m) {
-    printf("$%s$ HP=%d 攻撃=%d 防御=%d\n", (*m).name, (*m).hp, (*m).attack, (*m).defence);
+    int type = (*m).type;
+    switch(type) {
+        case FIRE:
+            printf("$%s$ HP=%d 攻撃=%d 防御=%d\n", (*m).name, (*m).hp, (*m).attack, (*m).defence);
+            break;
+        case WATER:
+            printf("~%s~ HP=%d 攻撃=%d 防御=%d\n", (*m).name, (*m).hp, (*m).attack, (*m).defence);
+            break;
+        case WIND:
+            printf("@%s@ HP=%d 攻撃=%d 防御=%d\n", (*m).name, (*m).hp, (*m).attack, (*m).defence);
+            break;
+        case EARTH:
+            printf("#%s# HP=%d 攻撃=%d 防御=%d\n", (*m).name, (*m).hp, (*m).attack, (*m).defence);
+            break;
+        default:
+            break;
+    }
 }
 
 // Gemsを表示する
@@ -116,7 +132,7 @@ int enemyAttack(Monster* m) {
     }
     partyHp -= damage;
     // %.0f 小数桁数は表示しない
-    printf("[%sのターン]\n~%s~の攻撃!%.0fのダメージを受けた\n", (*m).name, (*m).name, damage);
+    printf("[%sのターン]\n~%s~の攻撃!%.0fのダメージを受けた\n\n\n", (*m).name, (*m).name, damage);
     if(partyHp <= 0) {
         return 1;
     } else {
@@ -159,21 +175,24 @@ double allyAttack(int allyId, Monster* enemy, int igems, int combo) {
     }
     Monster* ally = IdToAlly(allyId);
     int attack = (*ally).attack;
-    printf("attack: %d\n", attack);
+    // printf("attack: %d\n", attack);
     int defence = (*enemy).defence;
-    printf("defence: %d\n", defence);
+    // printf("defence: %d\n", defence);
     int diff = attack - defence;
-    printf("diff: %d\n", diff);
+    // printf("diff: %d\n", diff);
     double revision = judgeMonstersType(ally, enemy);
-    printf("revision: %f\n", revision);
+    // printf("revision: %f\n", revision);
     int rondomNumber = rand() % 21;
-    printf("rondom: %d\n", rondomNumber);
+    // printf("rondom: %d\n", rondomNumber);
     double swingWidth = ((double) (rondomNumber - 10) * 0.01) + 1.0;
-    printf("swingwidth: %f\n", swingWidth);
+    // printf("swingwidth: %f\n", swingWidth);
     double power = pow(1.5, (double) (igems - 3 + combo));
-    printf("power: %f\n", power);
+    // printf("power: %f\n", power);
     double damage = (double) (diff) * revision * power * swingWidth;
-    printf("%sに%.0fのダメージ！\n", (*enemy).name, damage);
+    if(damage <= 0.0) {
+        damage = 1.0;
+    }
+    printf("%sに%.0fのダメージ！\n\n", (*enemy).name, damage);
     return damage;
 }
 
@@ -183,7 +202,10 @@ void healHp(int igems, int combo) {
     double power = pow(1.5, (double) (igems - 3 + combo));
     double healPower = 20.0 * power * swingWidth;
     partyHp += healPower;
-    printf("%.0fHPを回復した！\n", healPower);
+    if(partyHp > 600) {
+        partyHp = 600;
+    }
+    printf("%.0fHP回復した！\n\n", healPower);
 }
 
 
@@ -462,35 +484,35 @@ int main(int argc, char** argv) {
     printf("~%s~が現れた！\n\n\n", (*&suraimu).name);
     partyDied = oneTurnOfButtle(&suraimu);
     if(partyDied != 0) {
-        printf("***GAME OVER***\n倒したモンスター数=%d", 0);
+        printf("***GAME OVER***\n倒したモンスター数=%d\n", 0);
         return 1;
     }
     printf("~%s~に勝利した！\n\n", (*&suraimu).name);
     printf("#%s#が現れた！\n\n\n", (*&goburin).name);
     partyDied = oneTurnOfButtle(&goburin);
     if(partyDied != 0) {
-        printf("***GAME OVER***\n倒したモンスター数=%d", 1);
+        printf("***GAME OVER***\n倒したモンスター数=%d\n", 1);
         return 1;
     }
     printf("#%s#に勝利した！\n\n", (*&goburin).name);
     printf("@%s@が現れた！\n\n\n", (*&ookomori).name);
     partyDied = oneTurnOfButtle(&ookomori);
     if(partyDied != 0) {
-        printf("***GAME OVER***\n倒したモンスター数=%d", 2);
+        printf("***GAME OVER***\n倒したモンスター数=%d\n", 2);
         return 1;
     }
     printf("@%s@に勝利した！\n\n", (*&ookomori).name);
     printf("@%s@が現れた！\n\n\n", (*&weawolf).name);
     partyDied = oneTurnOfButtle(&weawolf);
     if(partyDied != 0) {
-        printf("***GAME OVER***\n倒したモンスター数=%d", 3);
+        printf("***GAME OVER***\n倒したモンスター数=%d\n", 3);
         return 1;
     }
     printf("@%s@に勝利した！\n\n", (*&weawolf).name);
     printf("$%s$が現れた！\n\n\n", (*&doragon).name);
     partyDied = oneTurnOfButtle(&doragon);
     if(partyDied != 0) {
-        printf("***GAME OVER***\n倒したモンスター数=%d", 4);
+        printf("***GAME OVER***\n倒したモンスター数=%d\n", 4);
         return 1;
     }
     printf("$%s$に勝利した！\n\n", (*&doragon).name);
