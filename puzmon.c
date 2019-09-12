@@ -12,6 +12,8 @@ char* playerName;
 double partyHp = 600.0;
 int partyDefence = (10 + 10 + 5 + 15) / 4;
 
+int combo = 0;
+
 double suraimuHp = 100.0;
 double goburinHp = 200.0;
 double ookomoriHp = 300.0;
@@ -316,7 +318,7 @@ int decreaseEnemyHp(Monster* enemy, double damage) {
 }
 
 // enemy死亡 => 0 コンボした => 1 コンボなし => 2
-int judgeAndJustyfyGems(Monster* enemy, int combo) {
+int judgeAndJustyfyGems(Monster* enemy) {
     srand((unsigned int)time(NULL));
     int comboed = 1;
     int count = 0;
@@ -326,8 +328,90 @@ int judgeAndJustyfyGems(Monster* enemy, int combo) {
     int stateOfEnemy = 1;
 
     for(int i = 0; i < 12; i++) {
+        // 8個消し
+        if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0 && memcmp(&gems[i + 3], &gems[i + 4], 1) == 0 && memcmp(&gems[i + 4], &gems[i + 5], 1) == 0 && memcmp(&gems[i + 5], &gems[i + 6], 1) == 0 && memcmp(&gems[i + 6], &gems[i + 7], 1) == 0) {
+            combo++;
+            comboed = 0;
+            allyId = judgeGems(i, combo);
+            if(allyId == 4) {
+                healHp(8, combo);
+            }
+            damage = allyAttack(allyId, enemy, 8, combo);
+            enemyDied = decreaseEnemyHp(enemy, damage);
+            printGems();
+            printf("\n");
+            for(int j = 7; j > -1; j--) {
+                for(int k = 0; k < 14 - (i + j); k++) {
+                    gems[(i + j) + k] = gems[(i + j) + (k + 1)];
+                }
+                int gemType = rand() % 5;
+                gems[13] = gemType;
+                printGems();
+                printf("\n");
+            }
+
+            if(enemyDied == 0) {
+                stateOfEnemy = 0;
+                break;
+            } 
+
+        // 7個消し
+        } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0 && memcmp(&gems[i + 3], &gems[i + 4], 1) == 0 && memcmp(&gems[i + 4], &gems[i + 5], 1) == 0 && memcmp(&gems[i + 5], &gems[i + 6], 1) == 0) {
+            combo++;
+            comboed = 0;
+            allyId = judgeGems(i, combo);
+            if(allyId == 4) {
+                healHp(7, combo);
+            }
+            damage = allyAttack(allyId, enemy, 7, combo);
+            enemyDied = decreaseEnemyHp(enemy, damage);
+            printGems();
+            printf("\n");
+            for(int j = 6; j > -1; j--) {
+                for(int k = 0; k < 14 - (i + j); k++) {
+                    gems[(i + j) + k] = gems[(i + j) + (k + 1)];
+                }
+                int gemType = rand() % 5;
+                gems[13] = gemType;
+                printGems();
+                printf("\n");
+            }
+
+            if(enemyDied == 0) {
+                stateOfEnemy = 0;
+                break;
+            } 
+        
+        // 6個消し
+        } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0 && memcmp(&gems[i + 3], &gems[i + 4], 1) == 0 && memcmp(&gems[i + 4], &gems[i + 5], 1) == 0) {
+            combo++;
+            comboed = 0;
+            allyId = judgeGems(i, combo);
+            if(allyId == 4) {
+                healHp(6, combo);
+            }
+            damage = allyAttack(allyId, enemy, 6, combo);
+            enemyDied = decreaseEnemyHp(enemy, damage);
+            printGems();
+            printf("\n");
+            for(int j = 5; j > -1; j--) {
+                for(int k = 0; k < 14 - (i + j); k++) {
+                    gems[(i + j) + k] = gems[(i + j) + (k + 1)];
+                }
+                int gemType = rand() % 5;
+                gems[13] = gemType;
+                printGems();
+                printf("\n");
+            }
+
+            if(enemyDied == 0) {
+                stateOfEnemy = 0;
+                break;
+            } 
+        
         // 5個消し
-        if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0 && memcmp(&gems[i + 3], &gems[i + 4], 1) == 0) {
+        } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0 && memcmp(&gems[i + 3], &gems[i + 4], 1) == 0) {
+            combo++;
             comboed = 0;
             allyId = judgeGems(i, combo);
             if(allyId == 4) {
@@ -353,6 +437,7 @@ int judgeAndJustyfyGems(Monster* enemy, int combo) {
             } 
         // 4個消し
         } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0 && memcmp(&gems[i + 2], &gems[i + 3], 1) == 0){
+            combo++;
             comboed = 0;
             allyId = judgeGems(i, combo);
             if(allyId == 4) {
@@ -377,6 +462,7 @@ int judgeAndJustyfyGems(Monster* enemy, int combo) {
             }
         // 3個消し
         } else if(memcmp(&gems[i], &gems[i + 1], 1) == 0 && memcmp(&gems[i + 1], &gems[i + 2], 1) == 0) {
+            combo++;
             comboed = 0;
             allyId = judgeGems(i, combo);
             if(allyId == 4) {
@@ -415,16 +501,16 @@ int judgeAndJustyfyGems(Monster* enemy, int combo) {
 
 // 敵死亡 => 0 コンボなし => 1
 int onePuzzle(Monster* enemy) {
-    int combo = 0;
     int result;
     
-    combo++;
-    result = judgeAndJustyfyGems(enemy, combo);
+    result = judgeAndJustyfyGems(enemy);
     if(result == 0) {
+        combo = 0;
         return 0;
     } else if(result == 1) {
         onePuzzle(enemy);
     } else if(result == 2) {
+        combo = 0;
         return 1;
     }
 }
